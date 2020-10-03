@@ -34,7 +34,9 @@ const getColor = (theme, name) => {
       svgBackground: '#292C33'
     }
   }
-  if (themes[theme] === undefined) theme = 'normal'
+  if (themes[theme] === undefined) {
+    theme = 'normal'
+  }
   return themes[theme][name] || ''
 }
 
@@ -352,7 +354,7 @@ export const StyledInspectorFooterStatusMessage = styled.div`
 export const StyledZoomHolder = styled.div`
   position: absolute;
   bottom: 39px;
-  right: 0;
+  left: 0;
   padding: 6px 6px 0 6px;
   border-left: #e6e9ef solid 1px;
   border-top: #e6e9ef solid 1px;
@@ -382,4 +384,77 @@ export const StyledZoomButton = styled.button`
       color: #9b9da2;
     }
   }
+`
+export const StyledPropertyPanelButton = styled.button`
+  display: list-item;
+  list-style-type: none;
+  font-size: 2em;
+  margin-bottom: 10px;
+  border: none;
+  color: #9b9da2;
+  background: transparent;
+  border-color: black;
+  padding: 2px 6px 3px;
+  &:focus {
+    outline: none;
+  }
+  &.faded {
+    opacity: 0.3;
+    cursor: auto;
+    &:hover {
+      color: #9b9da2;
+    }
+  }
+`
+export const StyledPropertyPanelHolder = styled.div`
+  position: absolute;
+  z-index: 1 !important;
+  top: 0px;
+  bottom: 0px;
+  right: 0;
+  width: 33%;
+  line-height: 1.5;
+  padding: 0px 0px 0px 0px;
+  border-left: #e6e9ef solid 1px;
+  border-top: #e6e9ef solid 1px;
+  background: #fff;
+  overflow: auto;
+  overflow-x: hidden;
+}
+`
+
+export const StyledPropertyPanelKeyCell = styled.div`
+  word-break: normal;
+  font-weight: bold;
+`
+
+export const StyledPropertyPanelTable = styled.div`
+  table {
+    margin: 0 !important;
+  }
+
+  td {
+    word-break: break-word;
+    padding: 5px 5px 5px 0 !important;
+    vertical-align: top;
+  }
+
+  .ui.secondary.menu {
+    margin: 0;
+    margin-right: -3px;
+  }
+`
+
+export const StyledInspectorComponent = styled.div`
+  width: ${props => (props.inspectorTableVisible ? '67%' : '100%')};
+  position: absolute;
+`
+
+export const StyledLegendComponent = styled.div`
+  width: ${props => (props.inspectorTableVisible ? '67%' : '100%')};
+  position: absolute;
+`
+export const StyledInlineTableValue = styled.div`
+  word-wrap: break-word;
+  margin-bottom: 15px;
 `

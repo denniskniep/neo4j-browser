@@ -132,7 +132,15 @@ export const DocumentsIcon = props => (
     {...props}
   />
 )
-
+export const ContextPropertiesIcon = props => (
+  <IconContainer
+    activeStyle={white}
+    inactiveStyle={inactive}
+    icon={expand01}
+    width={28}
+    {...props}
+  />
+)
 export const CloudIcon = props => (
   <IconContainer
     activeStyle={successGreen}
@@ -234,6 +242,9 @@ export const ZoomOutIcon = () => (
     inactiveStyle={inactive}
     className="sl-zoom-out"
   />
+)
+export const PropertyPanelIcon = () => (
+  <IconContainer icon={table01} text="Props" width={20} />
 )
 
 export const BinIcon = props => (

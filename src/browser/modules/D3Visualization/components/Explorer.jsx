@@ -28,6 +28,7 @@ import { LegendComponent } from './Legend'
 import { StyledFullSizeContainer } from './styled'
 import { getMaxFieldItems } from 'shared/modules/settings/settingsDuck'
 import { connect } from 'react-redux'
+import { StyledInspectorComponent, StyledLegendComponent } from './styled'
 
 const deduplicateNodes = nodes => {
   return nodes.reduce(
@@ -73,6 +74,7 @@ export class ExplorerComponent extends Component {
       stats: { labels: {}, relTypes: {} },
       graphStyle,
       styleVersion: 0,
+      inspectorTableVisible: false,
       nodes,
       relationships,
       selectedItem
@@ -114,6 +116,10 @@ export class ExplorerComponent extends Component {
 
   onItemSelect(item) {
     this.setState({ selectedItem: item })
+  }
+
+  onInspectorTableVisible(inspectorTableVisible) {
+    this.setState({ inspectorTableVisible: inspectorTableVisible })
   }
 
   onGraphModelChange(stats) {
@@ -216,7 +222,11 @@ export class ExplorerComponent extends Component {
           inspectingItemType ? this.state.forcePaddingBottom : null
         }
       >
-        {legend}
+        <StyledLegendComponent
+          inspectorTableVisible={this.state.inspectorTableVisible}
+        >
+          {legend}
+        </StyledLegendComponent>
         <GraphComponent
           fullscreen={this.props.fullscreen}
           frameHeight={this.props.frameHeight}
@@ -225,6 +235,9 @@ export class ExplorerComponent extends Component {
           getNodeNeighbours={this.getNodeNeighbours.bind(this)}
           onItemMouseOver={this.onItemMouseOver.bind(this)}
           onItemSelect={this.onItemSelect.bind(this)}
+          onInspectorTableVisible={this.onInspectorTableVisible.bind(this)}
+          hoveredItem={this.state.hoveredItem}
+          selectedItem={this.state.selectedItem}
           graphStyle={this.state.graphStyle}
           styleVersion={this.state.styleVersion} // cheap way for child to check style updates
           onGraphModelChange={this.onGraphModelChange.bind(this)}
@@ -232,14 +245,18 @@ export class ExplorerComponent extends Component {
           getAutoCompleteCallback={this.props.getAutoCompleteCallback}
           setGraph={this.props.setGraph}
         />
-        <InspectorComponent
-          hasTruncatedFields={this.props.hasTruncatedFields}
-          fullscreen={this.props.fullscreen}
-          hoveredItem={this.state.hoveredItem}
-          selectedItem={this.state.selectedItem}
-          graphStyle={this.state.graphStyle}
-          onExpandToggled={this.onInspectorExpandToggled.bind(this)}
-        />
+        <StyledInspectorComponent
+          inspectorTableVisible={this.state.inspectorTableVisible}
+        >
+          <InspectorComponent
+            hasTruncatedFields={this.props.hasTruncatedFields}
+            fullscreen={this.props.fullscreen}
+            hoveredItem={this.state.hoveredItem}
+            selectedItem={this.state.selectedItem}
+            graphStyle={this.state.graphStyle}
+            onExpandToggled={this.onInspectorExpandToggled.bind(this)}
+          />
+        </StyledInspectorComponent>
       </StyledFullSizeContainer>
     )
   }

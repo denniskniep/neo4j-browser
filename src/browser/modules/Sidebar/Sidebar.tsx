@@ -43,8 +43,10 @@ import {
   DocumentsIcon,
   CloudSyncIcon,
   SettingsIcon,
-  AboutIcon
+  AboutIcon,
+  ContextPropertiesIcon
 } from 'browser-components/icons/Icons'
+import ContextPropertyView from './ContextPropertyView'
 
 interface SidebarProps {
   openDrawer: string
@@ -77,6 +79,16 @@ const Sidebar = ({
         )
       },
       content: DatabaseDrawer
+    },
+    {
+      name: 'Context Properties',
+      title: '......',
+      icon: function docsIcon(isOpen: boolean): ReactElement {
+        return (
+          <ContextPropertiesIcon isOpen={isOpen} title="Help &amp; Resources" />
+        )
+      },
+      content: ContextPropertyView
     },
     {
       name: 'Favorites',

@@ -19,18 +19,29 @@
  */
 
 import React, { Component } from 'react'
-import { createGraph, mapRelationships, getGraphStats } from '../mapper'
+import { createGraph, getGraphStats, mapRelationships } from '../mapper'
 import { GraphEventHandler } from '../GraphEventHandler'
 import '../lib/visualization/index'
 import { dim } from 'browser-styles/constants'
-import { StyledZoomHolder, StyledSvgWrapper, StyledZoomButton } from './styled'
-import { ZoomInIcon, ZoomOutIcon } from 'browser-components/icons/Icons'
+import {
+  StyledPropertyPanelButton,
+  StyledSvgWrapper,
+  StyledZoomButton,
+  StyledZoomHolder
+} from './styled'
+import {
+  PropertyPanelIcon,
+  ZoomInIcon,
+  ZoomOutIcon
+} from 'browser-components/icons/Icons'
 import graphView from '../lib/visualization/components/graphView'
+import { InspectorTableComponent } from './InspectorTable'
 
 export class GraphComponent extends Component {
   state = {
     zoomInLimitReached: true,
-    zoomOutLimitReached: false
+    zoomOutLimitReached: false,
+    propertyPanelVisible: false
   }
 
   graphInit(el) {
@@ -51,6 +62,17 @@ export class GraphComponent extends Component {
       zoomInLimitReached: limits.zoomInLimit,
       zoomOutLimitReached: limits.zoomOutLimit
     })
+  }
+
+  togglePropertyPanel(el) {
+    const propertyPanelVisible = !this.state.propertyPanelVisible
+    this.setState({
+      propertyPanelVisible: propertyPanelVisible
+    })
+
+    if (this.props.onInspectorTableVisible) {
+      this.props.onInspectorTableVisible(propertyPanelVisible)
+    }
   }
 
   getVisualAreaHeight() {
@@ -97,6 +119,7 @@ export class GraphComponent extends Component {
         this.props.onGraphModelChange
       )
       this.graphEH.bindEventHandlers()
+
       this.props.onGraphModelChange(getGraphStats(this.graph))
       this.graphView.resize()
       this.graphView.update()
@@ -127,29 +150,46 @@ export class GraphComponent extends Component {
   }
 
   zoomButtons() {
-    if (this.props.fullscreen) {
-      return (
-        <StyledZoomHolder>
-          <StyledZoomButton
-            className={
-              this.state.zoomInLimitReached ? 'faded zoom-in' : 'zoom-in'
-            }
-            onClick={this.zoomInClicked.bind(this)}
-          >
-            <ZoomInIcon />
-          </StyledZoomButton>
-          <StyledZoomButton
-            className={
-              this.state.zoomOutLimitReached ? 'faded zoom-out' : 'zoom-out'
-            }
-            onClick={this.zoomOutClicked.bind(this)}
-          >
-            <ZoomOutIcon />
-          </StyledZoomButton>
-        </StyledZoomHolder>
-      )
-    }
+    //if (this.props.fullscreen) {
+    return (
+      <StyledZoomHolder>
+        <StyledPropertyPanelButton
+          onClick={this.togglePropertyPanel.bind(this)}
+        >
+          <PropertyPanelIcon />
+        </StyledPropertyPanelButton>
+        <StyledZoomButton
+          className={
+            this.state.zoomInLimitReached ? 'faded zoom-in' : 'zoom-in'
+          }
+          onClick={this.zoomInClicked.bind(this)}
+        >
+          <ZoomInIcon />
+        </StyledZoomButton>
+        <StyledZoomButton
+          className={
+            this.state.zoomOutLimitReached ? 'faded zoom-out' : 'zoom-out'
+          }
+          onClick={this.zoomOutClicked.bind(this)}
+        >
+          <ZoomOutIcon />
+        </StyledZoomButton>
+      </StyledZoomHolder>
+    )
+    //}
     return null
+  }
+
+  propertyPanel() {
+    return (
+      <InspectorTableComponent
+        hasTruncatedFields={true}
+        fullscreen={this.props.fullscreen}
+        hoveredItem={this.props.hoveredItem}
+        selectedItem={this.props.selectedItem}
+        graphStyle={this.props.graphStyle}
+      />
+    )
   }
 
   render() {
@@ -157,6 +197,7 @@ export class GraphComponent extends Component {
       <StyledSvgWrapper>
         <svg className="neod3viz" ref={this.graphInit.bind(this)} />
         {this.zoomButtons()}
+        {this.state.propertyPanelVisible && this.propertyPanel()}
       </StyledSvgWrapper>
     )
   }
