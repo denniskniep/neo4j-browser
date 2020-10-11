@@ -42,6 +42,7 @@ import ClickableUrls from '../../../components/ClickableUrls'
 import numberToUSLocale from 'shared/utils/number-to-US-locale'
 import { StyledTruncatedMessage } from 'browser/modules/Stream/styled'
 import { Icon } from 'semantic-ui-react'
+import { LabelModalComponent } from 'src-root/browser/modules/D3Visualization/components/LabelModal'
 
 const mapItemProperties = itemProperties =>
   itemProperties
@@ -59,31 +60,14 @@ const mapItemProperties = itemProperties =>
       </StyledInspectorFooterRowListPair>
     ))
 
-const mapLabels = (graphStyle, itemLabels) => {
-  return itemLabels.map((label, i) => {
-    const graphStyleForLabel = graphStyle.forNode({ labels: [label] })
-    const style = {
-      backgroundColor: graphStyleForLabel.get('color'),
-      color: graphStyleForLabel.get('text-color-internal')
-    }
-    return (
-      <StyledLabelToken
-        key={'label' + i}
-        style={style}
-        className={'token' + ' ' + 'token-label'}
-      >
-        {label}
-      </StyledLabelToken>
-    )
-  })
-}
-
 export class InspectorComponent extends Component {
   constructor(props) {
     super(props)
     this.state = {
       contracted: true,
-      graphStyle: props.graphStyle
+      graphStyle: props.graphStyle,
+      labelModalOpen: false,
+      labelForModal: null
     }
   }
 
@@ -91,6 +75,33 @@ export class InspectorComponent extends Component {
     if (elem) {
       this.footerRowElem = elem
     }
+  }
+
+  mapLabels = (graphStyle, itemLabels) => {
+    return itemLabels.map((label, i) => {
+      const graphStyleForLabel = graphStyle.forNode({ labels: [label] })
+      const style = {
+        backgroundColor: graphStyleForLabel.get('color'),
+        color: graphStyleForLabel.get('text-color-internal')
+      }
+      return (
+        <StyledLabelToken
+          key={'label' + i}
+          style={style}
+          onClick={() => this.onLabelClick(label)}
+          className={'token' + ' ' + 'token-label'}
+        >
+          {label}
+        </StyledLabelToken>
+      )
+    })
+  }
+
+  onLabelClick = label => {
+    this.setState({
+      labelModalOpen: true,
+      labelForModal: label
+    })
   }
 
   render() {
@@ -113,6 +124,7 @@ export class InspectorComponent extends Component {
       if (type === 'legend-item') {
         inspectorContent = (
           <GrassEditor
+            onClick={label => this.onLabelClick(label)}
             selectedLabel={item.selectedLabel}
             selectedRelType={item.selectedRelType}
           />
@@ -165,7 +177,7 @@ export class InspectorComponent extends Component {
       } else if (type === 'node') {
         inspectorContent = (
           <StyledInlineList className="list-inline">
-            {mapLabels(this.state.graphStyle, item.labels)}
+            {this.mapLabels(this.state.graphStyle, item.labels)}
             <StyledInspectorFooterRowListPair key="pair" className="pair">
               <StyledInspectorFooterRowListKey className="key">
                 {'<id>:'}
@@ -210,36 +222,45 @@ export class InspectorComponent extends Component {
     }
 
     return (
-      <StyledStatusBar
-        fullscreen={this.props.fullscreen}
-        className="status-bar"
-      >
-        <StyledStatus className="status">
-          <StyledInspectorFooter
-            className={
-              this.state.contracted
-                ? 'contracted inspector-footer'
-                : 'inspector-footer'
-            }
-          >
-            <StyledInspectorFooterRow
-              data-testid="vizInspector"
-              className="inspector-footer-row"
-              ref={this.setFooterRowELem.bind(this)}
+      <React.Fragment>
+        <StyledStatusBar
+          fullscreen={this.props.fullscreen}
+          className="status-bar"
+        >
+          <StyledStatus className="status">
+            <StyledInspectorFooter
+              className={
+                this.state.contracted
+                  ? 'contracted inspector-footer'
+                  : 'inspector-footer'
+              }
             >
-              {type === 'canvas' ? null : (
-                <RowExpandToggleComponent
-                  contracted={this.state.contracted}
-                  rowElem={this.footerRowElem}
-                  containerHeight={inspectorFooterContractedHeight}
-                  onClick={this.toggleExpand.bind(this)}
-                />
-              )}
-              {inspectorContent}
-            </StyledInspectorFooterRow>
-          </StyledInspectorFooter>
-        </StyledStatus>
-      </StyledStatusBar>
+              <StyledInspectorFooterRow
+                data-testid="vizInspector"
+                className="inspector-footer-row"
+                ref={this.setFooterRowELem.bind(this)}
+              >
+                {type === 'canvas' ? null : (
+                  <RowExpandToggleComponent
+                    contracted={this.state.contracted}
+                    rowElem={this.footerRowElem}
+                    containerHeight={inspectorFooterContractedHeight}
+                    onClick={this.toggleExpand.bind(this)}
+                  />
+                )}
+                {inspectorContent}
+              </StyledInspectorFooterRow>
+            </StyledInspectorFooter>
+          </StyledStatus>
+        </StyledStatusBar>
+        <LabelModalComponent
+          open={this.state.labelModalOpen}
+          label={this.state.labelForModal}
+          onClose={() =>
+            this.setState({ labelModalOpen: false, labelForModal: null })
+          }
+        ></LabelModalComponent>
+      </React.Fragment>
     )
   }
 

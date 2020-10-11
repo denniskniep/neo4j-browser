@@ -260,7 +260,15 @@ export class GrassEditorComponent extends Component {
         )
       ]
       title = (
-        <StyledLabelToken className="token token-label" style={inlineStyle}>
+        <StyledLabelToken
+          className="token token-label"
+          style={inlineStyle}
+          onClick={() =>
+            this.props.onClick &&
+            this.props.selectedLabel.label !== '*' &&
+            this.props.onClick(this.props.selectedLabel.label)
+          }
+        >
           {this.props.selectedLabel.label || '*'}
         </StyledLabelToken>
       )
@@ -288,6 +296,11 @@ export class GrassEditorComponent extends Component {
         <StyledTokenRelationshipType
           className="token token-relationship"
           style={inlineStyle}
+          onClick={() =>
+            this.props.onClick &&
+            this.props.selectedLabel.label !== '*' &&
+            this.props.onClick(this.props.selectedLabel.label)
+          }
         >
           {this.props.selectedRelType.relType || '*'}
         </StyledTokenRelationshipType>
